@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import shcm.shsupercm.fabric.citresewn.CITResewn;
 import shcm.shsupercm.fabric.citresewn.api.CITTypeContainer;
 import shcm.shsupercm.fabric.citresewn.cit.*;
+import shcm.shsupercm.fabric.citresewn.config.CITResewnConfig;
 import shcm.shsupercm.fabric.citresewn.defaults.cit.conditions.ConditionItems;
 import shcm.shsupercm.fabric.citresewn.defaults.common.ResewnItemModelIdentifier;
 import shcm.shsupercm.fabric.citresewn.defaults.mixin.types.item.JsonUnbakedModelAccessor;
@@ -33,8 +34,10 @@ import shcm.shsupercm.fabric.citresewn.pack.format.PropertyValue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -537,8 +540,28 @@ public class TypeItem extends CITType {
         }
     }
 
+    public static class CITDisplayCache extends CITCache<TypeItem> {
+        protected EnumMap<ModelTransformation.Mode, WeakReference<CIT<TypeItem>>> cits = new EnumMap<>(ModelTransformation.Mode.class);
+
+        protected final Function<CITContext, CIT<TypeItem>> realtime;
+
+        public CITDisplayCache(Function<CITContext, CIT<TypeItem>> realtime) {
+            this.realtime = realtime;
+        }
+
+        public WeakReference<CIT<TypeItem>> get(CITContext context) {
+            WeakReference<CIT<TypeItem>> citForDisplayMode = this.cits.get(context.displayMode);
+            if (citForDisplayMode == null || System.currentTimeMillis() - this.lastCachedStamp >= CITResewnConfig.INSTANCE.cache_ms) {
+                this.cits.put(context.displayMode, citForDisplayMode = new WeakReference<>(this.realtime.apply(context)));
+                this.lastCachedStamp = System.currentTimeMillis();
+            }
+
+            return citForDisplayMode;
+        }
+    }
+
     public interface CITCacheItem {
-        CITCache.Single<TypeItem> citresewn$getCacheTypeItem();
+        CITDisplayCache citresewn$getCacheTypeItem();
     }
 
     public interface BakedModelManagerMixinAccess {

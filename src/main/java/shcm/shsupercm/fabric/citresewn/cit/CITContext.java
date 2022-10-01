@@ -1,6 +1,7 @@
 package shcm.shsupercm.fabric.citresewn.cit;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.EnchantedBookItem;
@@ -35,6 +36,11 @@ public class CITContext {
      */
     @Nullable
     public final LivingEntity entity;
+
+    /**
+     * Currently unused.
+     */
+    public final ModelTransformation.Mode displayMode = ModelTransformation.Mode.NONE;
 
     /**
      * Cached enchantment map from {@link #stack}.
