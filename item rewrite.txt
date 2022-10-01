@@ -1,0 +1,34 @@
+Plans for Item Rewrite
+
+--- TYPE ---
+The type shall only hold one model.
+Old cits which introduce multiple models based on predicates will be split and updated on the fly.
+
+
+--- MODEL LOADING ---
+All models loaded by citresewn will now have cit resewn's namespace and full absolute paths in the asset manager(defined formatting).
+
+Provide full api for types for loading models to be used by more than the item type. (item type will do splitting logic; not the api)
+
+
+--- RENDERING ---
+Completely move cit resolution from getModel to the rendering paths that call it.
+
+CrackParticle:<init>:42
+modifyarg with captured context, forced single Mode.FIXED display mode.
+extract particle sprite.
+
+ItemEntityRenderer:render:68
+modifyvar bakedModel, forced Mode.GROUND display mode.
+needed for extra rendering transformations for item entity.
+
+ItemRenderer:renderGuiItemModel:219
+modifyvar model with captured context, forced Mode.GUI display mode
+
+ItemRenderer:renderItem:121
+modifyvar model with captured context, extract display mode from captured renderMode
+
+
+--- BAKED MODEL FETCHING FROM TYPE ---
+Must include display mode context in the getter so you could set the same CIT to different cache display modes.
+Predicate checking needs to happen prior to cit fetching, cits now only hold their own model and multi model cits are split into multiple loaded cits.
