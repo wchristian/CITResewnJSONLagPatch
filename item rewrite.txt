@@ -1,14 +1,15 @@
 Plans for Item Rewrite
 
 --- TYPE ---
-The type shall only hold one model.
-Old cits which introduce multiple models based on predicates will be split and updated on the fly.
-
+The type shall only hold one main model.
+Old cits which introduce multiple sub models will be baked into the main model.
+Need to explain in docs that the cit replaces the main model regardless of changing it or it's sub models.
+Sub model compatability between multiple cits will be handled by future predicate condition.
 
 --- MODEL LOADING ---
 All models loaded by citresewn will now have cit resewn's namespace and full absolute paths in the asset manager(defined formatting).
 
-Provide full api for types for loading models to be used by more than the item type. (item type will do splitting logic; not the api)
+Provide full api for types for loading models to be used by more than the item type.
 
 
 --- RENDERING ---
@@ -31,4 +32,3 @@ modifyvar model with captured context, extract display mode from captured render
 
 --- BAKED MODEL FETCHING FROM TYPE ---
 Must include display mode context in the getter so you could set the same CIT to different cache display modes.
-Predicate checking needs to happen prior to cit fetching, cits now only hold their own model and multi model cits are split into multiple loaded cits.
