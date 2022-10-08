@@ -1,11 +1,11 @@
 package shcm.shsupercm.fabric.citresewn.cit.models;
 
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.item.Item;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import shcm.shsupercm.fabric.citresewn.CITResewn;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,12 +13,14 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 
 public final class CITModel {
-    public final Identifier propertiesIdentifier;
+    public final Identifier propertiesIdentifier, modelLoaderIdentifier;
     private JsonUnbakedModel mainModel = null;
-    public BakedModel bakedModel = null;
+
+    public CITModelBakedListener bakedListener = null;
 
     public CITModel(Identifier propertiesIdentifier) {
         this.propertiesIdentifier = propertiesIdentifier;
+        this.modelLoaderIdentifier = new Identifier("citresewn", propertiesIdentifier.getNamespace() + "/" + propertiesIdentifier.getPath());
     }
 
     public JsonUnbakedModel mainModel() {
@@ -42,21 +44,36 @@ public final class CITModel {
         }
     }
 
-    public CITModel mainModel(Identifier absoluteLocation, ResourceManager resourceManager) throws ModelReadException {
+    public CITModel mainModel(Identifier resourcePath) throws ModelReadException {
         try {
-            BufferedReader reader = resourceManager.getResource(absoluteLocation).orElseThrow().getReader();
+            BufferedReader reader = CITResewn.INSTANCE.activeModelLoader.resourceManager.getResource(resourcePath).orElseThrow().getReader();
             return mainModel(reader);
         } catch (IOException | NoSuchElementException e) {
             throw new ModelReadException(e);
         }
     }
 
-    public CITModel mainModel(Item baseModel, ResourceManager resourceManager) throws ModelReadException {
-        Identifier id = Registry.ITEM.getId(baseModel);
-        if (Registry.ITEM.getDefaultId().equals(id))
-            throw new ModelReadException(new IllegalStateException("Item not registered"));
-        id = new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json");
+    public CITModel mainModel(Item baseModel) throws ModelReadException {
+        Identifier itemIdentifier = Registry.ITEM.getId(baseModel);
+        if (Registry.ITEM.getDefaultId().equals(itemIdentifier) && baseModel != Items.AIR)
+            throw new ModelReadException(new NullPointerException("Item not in registry"));
 
-        return mainModel(id, resourceManager);
+        try {
+            return mainModel(CITResewn.INSTANCE.activeModelLoader.loadModelFromJson(itemIdentifier));
+        } catch (IOException e) {
+            throw new ModelReadException(e);
+        }
+    }
+
+    public CITModel bake(CITModelBakedListener bakedListener) {
+        if (mainModel == null)
+            throw new IllegalStateException("No main model assigned");
+
+        this.bakedListener = bakedListener;
+
+        CITResewn.INSTANCE.activeModelLoader.unbakedModels.put(modelLoaderIdentifier, mainModel);
+        CITResewn.INSTANCE.activeModelLoader.modelsToBake.put(modelLoaderIdentifier, mainModel);
+        this.mainModel = null;
+        return this;
     }
 }

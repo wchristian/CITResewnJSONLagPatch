@@ -8,6 +8,7 @@ Sub model compatability between multiple cits will be handled by future predicat
 
 --- MODEL LOADING ---
 All models loaded by citresewn will now have cit resewn's namespace and full absolute paths in the asset manager(defined formatting).
+Formatting is as follows: `citresewn:<NAMESPACE>/<PATH FROM NAMESPACE>`
 
 Provide full api for types for loading models to be used by more than the item type.
 

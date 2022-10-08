@@ -31,7 +31,7 @@ public class JsonUnbakedModelMixin implements ModelWithCITModel {
         if (citresewn$citModel == null)
             return;
 
-        citresewn$citModel.bakedModel = cir.getReturnValue();
-
+        //todo baking error handling
+        citresewn$citModel.bakedListener.citModelBaked(citresewn$citModel, cir.getReturnValue());
     }
 }

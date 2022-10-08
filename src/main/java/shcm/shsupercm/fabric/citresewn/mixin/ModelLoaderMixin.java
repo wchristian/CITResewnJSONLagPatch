@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import shcm.shsupercm.fabric.citresewn.CITResewn;
 import shcm.shsupercm.fabric.citresewn.cit.ActiveCITs;
 
 import java.util.Map;
@@ -26,7 +27,12 @@ public class ModelLoaderMixin {
     @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V"))
     private void citresewn$loadCITs(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci) {
         profiler.push("citresewn:reloading_cits");
+        //noinspection ConstantConditions
+        CITResewn.INSTANCE.activeModelLoader = (ModelLoader) (Object) this;
+
         ActiveCITs.load(MinecraftClient.getInstance().getResourceManager(), profiler);
+
+        CITResewn.INSTANCE.activeModelLoader = null;
         profiler.pop();
     }
 }
