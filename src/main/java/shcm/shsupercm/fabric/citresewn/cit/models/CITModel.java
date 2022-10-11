@@ -13,6 +13,8 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 
 public final class CITModel {
+    public static final String ABSOLUTE_PATH_NAMESPACE = "citresewn";
+
     public final Identifier propertiesIdentifier, modelLoaderIdentifier;
     private JsonUnbakedModel mainModel = null;
 
@@ -20,7 +22,7 @@ public final class CITModel {
 
     public CITModel(Identifier propertiesIdentifier) {
         this.propertiesIdentifier = propertiesIdentifier;
-        this.modelLoaderIdentifier = new Identifier("citresewn", propertiesIdentifier.getNamespace() + "/" + propertiesIdentifier.getPath());
+        this.modelLoaderIdentifier = new Identifier(ABSOLUTE_PATH_NAMESPACE, propertiesIdentifier.getNamespace() + "/" + propertiesIdentifier.getPath());
     }
 
     public JsonUnbakedModel mainModel() {
@@ -32,6 +34,7 @@ public final class CITModel {
             throw new ModelReadException(new IllegalStateException("Already set main model"));
 
         this.mainModel = unbakedModel;
+        this.mainModel.id = modelLoaderIdentifier.toString();
         ((ModelWithCITModel) this.mainModel).citresewn$setCITModel(this);
         return this;
     }
@@ -57,6 +60,8 @@ public final class CITModel {
         Identifier itemIdentifier = Registry.ITEM.getId(baseModel);
         if (Registry.ITEM.getDefaultId().equals(itemIdentifier) && baseModel != Items.AIR)
             throw new ModelReadException(new NullPointerException("Item not in registry"));
+
+        itemIdentifier = new Identifier(itemIdentifier.getNamespace(), "item/" + itemIdentifier.getPath());
 
         try {
             return mainModel(CITResewn.INSTANCE.activeModelLoader.loadModelFromJson(itemIdentifier));
