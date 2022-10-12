@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import shcm.shsupercm.fabric.citresewn.cit.CITType;
 import shcm.shsupercm.fabric.citresewn.defaults.common.ResewnItemModelIdentifier;
-import shcm.shsupercm.fabric.citresewn.defaults.mixin.types.item.JsonUnbakedModelAccessor;
+import shcm.shsupercm.fabric.citresewn.defaults.cit.types.item.JsonUnbakedModelAccessor;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

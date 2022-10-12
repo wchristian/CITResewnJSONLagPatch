@@ -1,4 +1,4 @@
-package shcm.shsupercm.fabric.citresewn.defaults.mixin.types.item;
+package shcm.shsupercm.fabric.citresewn.defaults.cit.types.item;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;

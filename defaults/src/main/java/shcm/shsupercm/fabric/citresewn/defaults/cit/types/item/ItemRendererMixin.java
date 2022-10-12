@@ -1,4 +1,4 @@
-package shcm.shsupercm.fabric.citresewn.defaults.mixin.types.item;
+package shcm.shsupercm.fabric.citresewn.defaults.cit.types.item;
 
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemModels;
