@@ -27,7 +27,7 @@ public class ModelLoaderMixin {
     private void citresewn$listenToBaking(Identifier id, ModelBakeSettings settings, CallbackInfoReturnable<BakedModel> cir) {
         if (citresewn$listenToBaking$captureUnbakedModel instanceof ModelWithCITModel citModel && citModel.citresewn$getCITModel() != null) {
             //todo baking error handling
-            citModel.citresewn$getCITModel().bakedListener.citModelBaked(citModel.citresewn$getCITModel(), cir.getReturnValue());
+            citModel.citresewn$getCITModel().citModelBaked(citModel.citresewn$getCITModel(), cir.getReturnValue());
         }
         citresewn$listenToBaking$captureUnbakedModel = null;
     }

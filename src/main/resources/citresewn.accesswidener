@@ -5,3 +5,6 @@ accessible    field    net/minecraft/client/render/model/ModelLoader    resource
 accessible    field    net/minecraft/client/render/model/ModelLoader    unbakedModels      Ljava/util/Map;
 accessible    field    net/minecraft/client/render/model/ModelLoader    modelsToBake       Ljava/util/Map;
 accessible    method   net/minecraft/client/render/model/ModelLoader    loadModelFromJson  (Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;
+accessible    field    net/minecraft/client/render/model/json/JsonUnbakedModel parent      Lnet/minecraft/client/render/model/json/JsonUnbakedModel;
+accessible    field    net/minecraft/client/render/model/json/JsonUnbakedModel parentId    Lnet/minecraft/util/Identifier;
+accessible    field    net/minecraft/client/render/model/json/ModelOverride    conditions  Ljava/util/List;

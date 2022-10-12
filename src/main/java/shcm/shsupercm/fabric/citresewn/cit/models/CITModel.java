@@ -1,24 +1,30 @@
 package shcm.shsupercm.fabric.citresewn.cit.models;
 
+import com.google.common.collect.Sets;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import shcm.shsupercm.fabric.citresewn.CITResewn;
+import shcm.shsupercm.fabric.citresewn.cit.CITType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 
-public final class CITModel {
+public final class CITModel implements CITModelBakedListener {
     public static final String ABSOLUTE_PATH_NAMESPACE = "citresewn";
 
     public final Identifier propertiesIdentifier, modelLoaderIdentifier;
     private JsonUnbakedModel mainModel = null;
 
-    public CITModelBakedListener bakedListener = null;
+    private CITModelBakedListener bakedListener = null;
 
     public CITModel(Identifier propertiesIdentifier) {
         this.propertiesIdentifier = propertiesIdentifier;
@@ -26,6 +32,8 @@ public final class CITModel {
     }
 
     public JsonUnbakedModel mainModel() {
+        if (this.mainModel == null)
+            throw new NullPointerException("No main model assigned");
         return this.mainModel;
     }
 
@@ -61,13 +69,46 @@ public final class CITModel {
         if (Registry.ITEM.getDefaultId().equals(itemIdentifier) && baseModel != Items.AIR)
             throw new ModelReadException(new NullPointerException("Item not in registry"));
 
-        itemIdentifier = new Identifier(itemIdentifier.getNamespace(), "item/" + itemIdentifier.getPath());
-
         try {
-            return mainModel(CITResewn.INSTANCE.activeModelLoader.loadModelFromJson(itemIdentifier));
+            return mainModel(CITResewn.INSTANCE.activeModelLoader.loadModelFromJson(new Identifier(itemIdentifier.getNamespace(), "item/" + itemIdentifier.getPath())));
         } catch (IOException e) {
             throw new ModelReadException(e);
         }
+    }
+
+    public CITModel resolveParentTree() throws ModelReadException {
+        LinkedHashSet<JsonUnbakedModel> set = Sets.newLinkedHashSet();
+        JsonUnbakedModel jsonUnbakedModel = mainModel();
+        while (jsonUnbakedModel.parentId != null && jsonUnbakedModel.parent == null) {
+            set.add(jsonUnbakedModel);
+            JsonUnbakedModel parentUnbakedModel;
+            if (jsonUnbakedModel.parentId.getPath().equals("builtin/generated"))
+                parentUnbakedModel = ModelLoader.GENERATION_MARKER;
+            else {
+                Identifier resolvedParentIdentifier = CITType.resolveAsset(this.propertiesIdentifier, jsonUnbakedModel.parentId.toString(), "models", ".json", CITResewn.INSTANCE.activeModelLoader.resourceManager);
+                parentUnbakedModel = new CITModel(ModelLoader.MISSING_ID).mainModel(resolvedParentIdentifier).mainModel;
+                if (parentUnbakedModel == null) {
+                    throw new ModelReadException(new NullPointerException("Parent '" + jsonUnbakedModel.parentId.toString() + "' not found"));
+                }
+                if (set.contains(parentUnbakedModel)) {
+                    throw new ModelReadException(new IllegalStateException("Found parent loop '" + jsonUnbakedModel.parentId.toString() + "'"));
+                }
+            }
+            jsonUnbakedModel.parent = parentUnbakedModel;
+            jsonUnbakedModel = jsonUnbakedModel.parent;
+        }
+        return this;
+    }
+
+    public CITModel resolveOverrides() {
+        for (ModelOverride override : mainModel().getOverrides()) {
+            Identifier resolvedOverrideIdentifier = CITType.resolveAsset(this.propertiesIdentifier, override.getModelId().toString(), "models", ".json", CITResewn.INSTANCE.activeModelLoader.resourceManager);
+            for (ModelOverride.Condition condition : override.conditions) {
+                //stub todo
+            }
+        }
+        mainModel().getOverrides().clear();
+        return this;
     }
 
     public CITModel bake(CITModelBakedListener bakedListener) {
@@ -80,5 +121,10 @@ public final class CITModel {
         CITResewn.INSTANCE.activeModelLoader.modelsToBake.put(modelLoaderIdentifier, mainModel);
         this.mainModel = null;
         return this;
+    }
+
+    @Override
+    public void citModelBaked(CITModel citModel, BakedModel bakedModel) {
+        bakedListener.citModelBaked(citModel, bakedModel);
     }
 }
