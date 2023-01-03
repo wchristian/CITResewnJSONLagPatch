@@ -1,6 +1,7 @@
 package shcm.shsupercm.fabric.citresewn.cit.models;
 
 import com.google.common.collect.Sets;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
@@ -8,7 +9,7 @@ import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import shcm.shsupercm.fabric.citresewn.CITResewn;
 import shcm.shsupercm.fabric.citresewn.cit.CITType;
 
@@ -57,7 +58,7 @@ public final class CITModel implements CITModelBakedListener {
 
     public CITModel mainModel(Identifier resourcePath) throws ModelReadException {
         try {
-            BufferedReader reader = CITResewn.INSTANCE.activeModelLoader.resourceManager.getResource(resourcePath).orElseThrow().getReader();
+            BufferedReader reader = MinecraftClient.getInstance().getResourceManager().getResource(resourcePath).orElseThrow().getReader();
             return mainModel(reader);
         } catch (IOException | NoSuchElementException e) {
             throw new ModelReadException(e);
@@ -65,8 +66,8 @@ public final class CITModel implements CITModelBakedListener {
     }
 
     public CITModel mainModel(Item baseModel) throws ModelReadException {
-        Identifier itemIdentifier = Registry.ITEM.getId(baseModel);
-        if (Registry.ITEM.getDefaultId().equals(itemIdentifier) && baseModel != Items.AIR)
+        Identifier itemIdentifier = Registries.ITEM.getId(baseModel);
+        if (Registries.ITEM.getDefaultId().equals(itemIdentifier) && baseModel != Items.AIR)
             throw new ModelReadException(new NullPointerException("Item not in registry"));
 
         try {
@@ -85,7 +86,7 @@ public final class CITModel implements CITModelBakedListener {
             if (jsonUnbakedModel.parentId.getPath().equals("builtin/generated"))
                 parentUnbakedModel = ModelLoader.GENERATION_MARKER;
             else {
-                Identifier resolvedParentIdentifier = CITType.resolveAsset(this.propertiesIdentifier, jsonUnbakedModel.parentId.toString(), "models", ".json", CITResewn.INSTANCE.activeModelLoader.resourceManager);
+                Identifier resolvedParentIdentifier = CITType.resolveAsset(this.propertiesIdentifier, jsonUnbakedModel.parentId.toString(), "models", ".json", MinecraftClient.getInstance().getResourceManager());
                 parentUnbakedModel = new CITModel(ModelLoader.MISSING_ID).mainModel(resolvedParentIdentifier).mainModel;
                 if (parentUnbakedModel == null) {
                     throw new ModelReadException(new NullPointerException("Parent '" + jsonUnbakedModel.parentId.toString() + "' not found"));
@@ -102,7 +103,7 @@ public final class CITModel implements CITModelBakedListener {
 
     public CITModel resolveOverrides() {
         for (ModelOverride override : mainModel().getOverrides()) {
-            Identifier resolvedOverrideIdentifier = CITType.resolveAsset(this.propertiesIdentifier, override.getModelId().toString(), "models", ".json", CITResewn.INSTANCE.activeModelLoader.resourceManager);
+            Identifier resolvedOverrideIdentifier = CITType.resolveAsset(this.propertiesIdentifier, override.getModelId().toString(), "models", ".json", MinecraftClient.getInstance().getResourceManager());
             for (ModelOverride.Condition condition : override.conditions) {
                 //stub todo
             }

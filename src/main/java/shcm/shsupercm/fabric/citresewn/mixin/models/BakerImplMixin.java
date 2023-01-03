@@ -2,7 +2,6 @@ package shcm.shsupercm.fabric.citresewn.mixin.models;
 
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import shcm.shsupercm.fabric.citresewn.cit.models.ModelWithCITModel;
 
-@Mixin(ModelLoader.class)
-public class ModelLoaderMixin {
+@Mixin(targets = "net.minecraft.client.render.model.ModelLoader$BakerImpl")
+public class BakerImplMixin {
     private UnbakedModel citresewn$listenToBaking$captureUnbakedModel = null;
 
     @ModifyVariable(method = "bake", at =
@@ -23,7 +22,7 @@ public class ModelLoaderMixin {
 
     @Inject(method = "bake", locals = LocalCapture.CAPTURE_FAILEXCEPTION, at =
     @At("RETURN"), slice =
-    @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;getOrLoadModel(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/UnbakedModel;")))
+    @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader$BakerImpl;getOrLoadModel(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/UnbakedModel;")))
     private void citresewn$listenToBaking(Identifier id, ModelBakeSettings settings, CallbackInfoReturnable<BakedModel> cir) {
         if (citresewn$listenToBaking$captureUnbakedModel instanceof ModelWithCITModel citModel && citModel.citresewn$getCITModel() != null) {
             //todo baking error handling
