@@ -2,17 +2,19 @@
   "schemaVersion": 1,
   "id": "citresewn",
   "version": "${version}",
-  "name": "CIT Resewn",
-  "description": "Re-implements MCPatcher's CIT",
+  "name": "CIT Resewn JSONLagPatch",
+  "description": "CIT Resewn, but patched to remove lag with Hypixel+ Skyblock. Will be deleted once CIT Resewn is updated.",
   "authors": [
-    "SHsuperCM"
+    "SHsuperCM",
+    "wahfl2",
+    "Mithaldu"
   ],
   "license": "MIT",
   "icon": "assets/citresewn/logo.png",
   "contact": {
-    "homepage": "https://citresewn.shcm.io/",
-    "sources": "https://github.com/SHsuperCM/CITResewn",
-    "issues": "https://github.com/SHsuperCM/CITResewn/issues"
+    "homepage": "https://github.com/wchristian/CITResewnJSONLagPatch",
+    "sources": "https://github.com/wchristian/CITResewnJSONLagPatch",
+    "issues": "https://github.com/wchristian/CITResewnJSONLagPatch/issues"
   },
 
   "environment": "client",

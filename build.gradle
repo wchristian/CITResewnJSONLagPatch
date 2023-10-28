@@ -88,7 +88,7 @@ java {
 
 modrinth {
     token = TOKEN_MODRINTH
-    projectId = "otVJckYQ"
+    projectId = "l9mAN7Zb"
     uploadFile = remapJar
     changelog = Files.readString(projectDir.toPath().resolve("Changelog.md"))
     versionNumber = version
