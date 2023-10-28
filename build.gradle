@@ -100,7 +100,7 @@ modrinth {
 curseforge {
     apiKey = TOKEN_CURSEFORGE
     project {
-        id = '521427'
+        id = '929000'
         changelogType = 'markdown'
         changelog = file('Changelog.md')
         releaseType = 'release'
