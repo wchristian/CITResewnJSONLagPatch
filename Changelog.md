@@ -1,1 +1,1 @@
- - Updated to 1.20
+ - Added another performance improvement https://github.com/SHsuperCM/CITResewn/pull/343
