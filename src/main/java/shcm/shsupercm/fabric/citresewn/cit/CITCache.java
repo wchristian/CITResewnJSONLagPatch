@@ -47,7 +47,7 @@ public abstract class CITCache<T extends CITType> {
          */
         public WeakReference<CIT<T>> get(CITContext context) {
             if (this.cit == null
-                    System.currentTimeMillis() - (this.lastCachedStamp + this.refreshOffset) >= CITResewnConfig.INSTANCE.cache_ms) {
+                    || System.currentTimeMillis() - (this.lastCachedStamp + this.refreshOffset) >= CITResewnConfig.INSTANCE.cache_ms) {
                 this.cit = new WeakReference<>(this.realtime.apply(context));
                 this.lastCachedStamp = System.currentTimeMillis() - this.refreshOffset;
             }
