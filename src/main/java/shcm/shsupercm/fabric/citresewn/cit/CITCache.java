@@ -18,6 +18,7 @@ public abstract class CITCache<T extends CITType> {
      * The last time in epoch milliseconds that this cache invalidated its stored CIT.
      */
     public long lastCachedStamp = 0;
+    public int refreshOffset = (int) (Math.random() * CITResewnConfig.INSTANCE.cache_ms);
 
     /**
      * Common implementation of a single CIT per holder({@link ItemStack}) caching.
@@ -46,9 +47,9 @@ public abstract class CITCache<T extends CITType> {
          */
         public WeakReference<CIT<T>> get(CITContext context) {
             if (this.cit == null
-                    || System.currentTimeMillis() - this.lastCachedStamp >= (Math.random() * CITResewnConfig.INSTANCE.cache_ms * 2)) {
+                    || System.currentTimeMillis() - (this.lastCachedStamp + this.refreshOffset) >= CITResewnConfig.INSTANCE.cache_ms) {
                 this.cit = new WeakReference<>(this.realtime.apply(context));
-                this.lastCachedStamp = System.currentTimeMillis();
+                this.lastCachedStamp = System.currentTimeMillis() - this.refreshOffset;
             }
 
             return this.cit;
